@@ -44,9 +44,11 @@ const TPL = `
                 
                 <span class="note-info-mime"></span>
             </td>
-
+            
+            <th>From Now:</th>
+            <td><span class="note-info-from-now">26 days</span></td>
+            
             <th title="Note size provides rough estimate of storage requirements for this note. It takes into account note's content and content of its note revisions.">Note size:</th>
-           
             <td colspan="3">
                 <button class="btn btn-sm calculate-button" style="padding: 0px 10px 0px 10px;">
                     <span class="bx bx-calculator"></span> calculate
@@ -96,6 +98,7 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
         this.$noteSizesWrapper = this.$widget.find('.note-sizes-wrapper');
         this.$noteSize = this.$widget.find(".note-size");
         this.$subTreeSize = this.$widget.find(".subtree-size");
+        this.$fromNow = this.$widget.find(".note-info-from-now");
 
         this.$calculateButton = this.$widget.find(".calculate-button");
         this.$calculateButton.on('click', async () => {
@@ -138,6 +141,8 @@ export default class NoteInfoWidget extends NoteContextAwareWidget {
         } else {
             this.$mime.empty();
         }
+        const fromNow = Math.floor((new Date().getTime() - new Date(metadata.dateCreated).getTime()) / 1000 / 60 / 60 / 24);
+        this.$fromNow.text(fromNow + ' days');
 
         this.$calculateButton.show();
         this.$noteSizesWrapper.hide();

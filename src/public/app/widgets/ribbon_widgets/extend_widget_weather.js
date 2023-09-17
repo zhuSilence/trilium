@@ -26,7 +26,7 @@ async function getLunarDay() {
     return `${year}-${month}-${day} 农历 ${lunYear} 年 ${lunMonth} 月 ${lunDay} ${dayOfWeek}`;
 }
 
-async function getWether() {
+async function getWeather() {
     const location = await getLocation();
     // 调用高德获取天气接口
     return await fetch('https://restapi.amap.com/v3/weather/weatherInfo?key=' + key + '&city=' + location.adcode + '&extensions=all&output=JSON')
@@ -66,6 +66,6 @@ function getDayOfWeek(dateString) {
 
 export default {
     getDayOfWeek,
-    getWether,
+    getWeather,
     getLunarDay
 }

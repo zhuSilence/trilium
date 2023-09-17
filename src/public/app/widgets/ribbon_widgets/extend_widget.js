@@ -19,7 +19,7 @@ import DocTypeWidget from "../type_widgets/doc.js";
 import ContentWidgetTypeWidget from "../type_widgets/content_widget.js";
 import AttachmentDetailTypeWidget from "../type_widgets/attachment_detail.js";
 import AttachmentListTypeWidget from "../type_widgets/attachment_list.js";
-import extendWidgetWether from "./extend_widget_wether.js";
+import extendWidgetWeather from "./extend_widget_weather.js";
 
 const TPL = `
 <div class="extend-widget">
@@ -29,7 +29,7 @@ const TPL = `
         }
     </style>
 
-    <button class="btn btn-sm extend-button extend-button-insert-wether">Insert Date And Wether</button>
+    <button class="btn btn-sm extend-button extend-button-insert-weather">Insert Date And Weather</button>
 </div>
 `;
 
@@ -77,7 +77,7 @@ export default class ExtendWidget extends NoteContextAwareWidget {
         return {
             show: this.isEnabled(),
             title: 'Extend',
-            icon: 'bx bx-info-circle'
+            icon: 'bx bx-dots-horizontal-rounded'
         };
     }
 
@@ -85,12 +85,12 @@ export default class ExtendWidget extends NoteContextAwareWidget {
         this.$widget = $(TPL);
         this.contentSized();
 
-        this.$insertDateAndWether = this.$widget.find(".extend-button-insert-wether");
-        this.$insertDateAndWether.on('click', async () => {
-            const lunarDay = await extendWidgetWether.getLunarDay();
-            const wether = await extendWidgetWether.getWether();
-            const formattedDate = `${lunarDay} ${wether.city} ${wether.dayweather}`;
-            let insertContent = "<h2 class='insert-date-and-wether'>" + formattedDate + "</h2>";
+        this.$insertDateAndWeather = this.$widget.find(".extend-button-insert-weather");
+        this.$insertDateAndWeather.on('click', async () => {
+            const lunarDay = await extendWidgetWeather.getLunarDay();
+            const weather = await extendWidgetWeather.getWeather();
+            const formattedDate = `${lunarDay} ${weather.city} ${weather.dayweather}`;
+            let insertContent = "<h2 class='insert-date-and-weather'>" + formattedDate + "</h2>";
 
             // 获取文档中的现有内容，并且其前面插入上面的字符串，然后更新笔记内容
             let blob = await server.get(`notes/${this.noteId}/blob`, {}, this.componentId);
@@ -103,9 +103,9 @@ export default class ExtendWidget extends NoteContextAwareWidget {
 
     async refreshWithNote(note) {
         if (note.type === 'text') {
-            this.$insertDateAndWether.show();
+            this.$insertDateAndWeather.show();
         } else {
-            this.$insertDateAndWether.hide();
+            this.$insertDateAndWeather.hide();
         }
     }
 
