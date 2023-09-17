@@ -19,7 +19,7 @@ import DocTypeWidget from "../type_widgets/doc.js";
 import ContentWidgetTypeWidget from "../type_widgets/content_widget.js";
 import AttachmentDetailTypeWidget from "../type_widgets/attachment_detail.js";
 import AttachmentListTypeWidget from "../type_widgets/attachment_list.js";
-import lunarFun from "lunar-fun";
+import extendWidgetWether from "./extend_widget_wether.js";
 
 const TPL = `
 <div class="extend-widget">
@@ -87,15 +87,9 @@ export default class ExtendWidget extends NoteContextAwareWidget {
 
         this.$insertDateAndWether = this.$widget.find(".extend-button-insert-wether");
         this.$insertDateAndWether.on('click', async () => {
-            // 生成新的日期和天气的字符串
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            // const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-            // console.log(formattedDate);
-            const lun = lunarFun.gregorianToLunal(year, month, day);
-            const formattedDate = `${year}-${month}-${day}` + ` ${lun[0]} 年 ${lun[1]} 月 ${lun[2]} 日`;
+            const lunarDay = await extendWidgetWether.getLunarDay();
+            const wether = await extendWidgetWether.getWether();
+            const formattedDate = `${lunarDay} ${wether.city} ${wether.dayweather}`;
             let insertContent = "<h2 class='insert-date-and-wether'>" + formattedDate + "</h2>";
 
             // 获取文档中的现有内容，并且其前面插入上面的字符串，然后更新笔记内容
@@ -120,4 +114,55 @@ export default class ExtendWidget extends NoteContextAwareWidget {
             this.refresh();
         }
     }
+
+}
+
+
+function GetLocation(func) {
+
+
+    let that = this,
+        locationCookie = this.getSQCookie('sunqBlogLocation'),
+        sunqBlogLocationCode = this.getSQCookie('sunqBlogLocationCode');
+
+    // 如果用户多次访问，一周内不会重复请求定位接口
+    if (locationCookie) {
+        func(locationCookie, sunqBlogLocationCode);
+    } else {
+        axios({
+            url: 'https://restapi.amap.com/v3/ip',
+            method: 'post',
+            params: {
+                key: 'ba5f9b69f0541123a4dbe142da230b4d'
+            },
+        }).then(function (resp) {
+            func(resp.data.city, resp.data.adcode);
+            that.setSQCookie('sunqBlogLocation', resp.data.city, 3); // 相隔3小时同一浏览器再次访问时会重新定位
+            that.setSQCookie('sunqBlogLocationCode', resp.data.adcode, 3);
+        }).catch();
+    }
+};
+
+function getWeathData(cityName, cityCode) {
+    let that = this;
+    axios({
+        url: "https://restapi.amap.com/v3/weather/weatherInfo",
+        method: "GET",
+        params: {
+            key: "ba5f9b69f0541123a4dbe142da230b4d",
+            city: cityCode,
+            extensions: 'all',
+            output: "JSON"
+        },
+    }).then(function (resp) {
+        //  此处获得天气预报数据
+        console.log(resp.data);
+
+        that.setSQCookie(
+            "sunqBlogWeather",
+            resp.data,
+            3
+        ); // 相隔3小时同一浏览器再次访问时会重新获取天气
+    })
+        .catch();
 }

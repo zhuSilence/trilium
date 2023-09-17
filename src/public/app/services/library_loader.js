@@ -21,6 +21,9 @@ const CODE_MIRROR = {
     ]
 };
 
+const LUNAR_FUN = {
+    js: ["libraries/v2.0.0/lunarFun.min.js"]
+}
 const ESLINT = {js: ["libraries/eslint.js"]};
 
 const RELATION_MAP = {
@@ -125,5 +128,6 @@ export default {
     FORCE_GRAPH,
     MERMAID,
     EXCALIDRAW,
-    MARKJS
+    MARKJS,
+    LUNAR_FUN
 }
